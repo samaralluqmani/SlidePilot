@@ -22,10 +22,16 @@ Give every slide a distinct job. Select a different composition when the job cha
 Give the closing slide a short conclusion title and one plain-language sentence in body stating the source-supported goal, implication, or next step. Keep it distinct from the main-message slide. Avoid listing earlier steps again or describing goals as achieved outcomes.
 Before returning the plan, check each slide against the document. Preserve units, time periods, conditions, and distinctions such as actual results versus targets. Do not infer causation or generalize beyond the source. Explain the meaning in clear language, and omit any claim that cannot be traced to the document.
 
+Choose the visual theme from the main subject of the document. Use editorial for general topics that do not fit a theme below.
 Themes:
 - technology: software, AI, engineering, data, cloud, cybersecurity, digital products
 - business: strategy, markets, customers, operations, finance, sales, management
 - academic: research, university, methodology, findings, literature, experiments, scholarly work
+- culinary: recipes, cooking, ingredients, baking, food presentation
+- travel: trips, destinations, itineraries, tourism, destination guides
+- nature: wildlife, gardening, landscapes, ecology and the outdoors
+- culture: art, heritage, museums, performances and exhibitions
+- editorial: general topics, personal interests and other mixed subjects
 
 Supported layouts:
 - title
@@ -60,7 +66,7 @@ Visual planning:
 - visual_style may be abstract, illustration, photo, diagram, or none.
 - Prompts should describe one clean editorial visual with no readable text, no logos, and no watermark.
 - Do not request generated images for chart, table, metrics, metric_story, timeline, or process slides; those layouts already provide their own information visual.
-- Match visual prompts to the selected theme: technology = polished futuristic editorial; business = premium corporate editorial; academic = restrained scholarly editorial.
+- Match each visual to the actual topic and specific details in the source. For example, use the named dish or ingredients in a recipe, and the named destination in a travel document. Use a conceptual visual if a factual depiction would require guessing.
 
 The deck object must contain title, optional subtitle/author, theme, and slides.
 """

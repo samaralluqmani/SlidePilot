@@ -13,6 +13,17 @@ SKIP_LAYOUTS = {"metrics", "metric_story", "takeaway", "table", "chart", "timeli
 
 
 THEME_VISUAL_DIRECTION = {
+    "culinary": (
+        "Natural culinary editorial photography with warm terracotta and cream, natural window light, "
+        "realistic textures, and the specific dish or ingredients described by the source."
+    ),
+    "travel": (
+        "Destination editorial photography with deep teal, sea-glass tones and warm sand. "
+        "Use details tied to the named place or travel activity, with a clear focal point."
+    ),
+    "nature": "Natural history editorial imagery, muted greens, earthy accents and subject-specific detail.",
+    "culture": "Arts editorial imagery with plum and muted rose, soft light, and subject-specific materials.",
+    "editorial": "Clean topic-led editorial imagery with slate, muted violet and restrained blue-green accents.",
     "business": (
         "Premium corporate editorial photography or sophisticated conceptual imagery. "
         "Use clean architectural geometry, executive environments, market/growth metaphors, "
@@ -48,7 +59,7 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
 
     visuals: dict[int, bytes] = {}
     generated = 0
-    theme_direction = THEME_VISUAL_DIRECTION.get(deck.theme, THEME_VISUAL_DIRECTION["technology"])
+    theme_direction = THEME_VISUAL_DIRECTION.get(deck.theme, THEME_VISUAL_DIRECTION["editorial"])
 
     # Preserve the cover and evidence visuals when the document exceeds the image budget.
     ordered_slides = sorted(

@@ -1,9 +1,26 @@
 import re
 
 from models.deck import Deck
+from presentation.theme import THEMES
 
 
 WEIGHTS = {
+    "culinary": {
+        "recipe": 3, "recipes": 3, "ingredients": 3, "cooking": 3, "baking": 2,
+        "الطبخ": 3, "وصفة": 3, "المكونات": 3, "المقادير": 3,
+    },
+    "travel": {
+        "travel": 3, "itinerary": 3, "tourism": 3, "sightseeing": 3, "destination": 2,
+        "السفر": 3, "السياحة": 3, "رحلة": 2, "وجهة": 2,
+    },
+    "nature": {
+        "biodiversity": 3, "wildlife": 3, "ecosystem": 3, "habitat": 2,
+        "التنوع الحيوي": 3, "الحياة البرية": 3, "النظام البيئي": 3,
+    },
+    "culture": {
+        "heritage": 3, "exhibition": 3, "museum": 2, "performing arts": 3,
+        "التراث": 3, "معرض فني": 3, "المتحف": 2,
+    },
     "technology": {
         "artificial intelligence": 3,
         "machine learning": 3,
@@ -56,7 +73,7 @@ def _score(text: str, terms: dict[str, int]) -> int:
 
 
 def resolve_theme(deck: Deck, source_text: str, override: str | None = None) -> Deck:
-    if override in {"technology", "business", "academic"}:
+    if override in THEMES:
         deck.theme = override
         return deck
 

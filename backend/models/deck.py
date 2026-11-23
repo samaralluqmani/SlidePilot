@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
-ThemeName = Literal["business", "technology", "academic"]
+ThemeName = Literal["business", "technology", "academic", "culinary", "travel", "nature", "culture", "editorial"]
 SlideLayout = Literal[
     "title",
     "takeaway",

@@ -87,4 +87,10 @@ MAX_GENERATED_VISUALS=6
 - **Business:** light corporate canvas, blue rail, restrained grids and KPI styling.
 - **Academic:** warm editorial canvas, burgundy/gold rules, serif hierarchy.
 
+- **Culinary:** cream, terracotta and warm editorial food imagery.
+- **Travel:** sea-glass, deep teal and destination-led imagery.
+- **Nature:** soft greens, earthy accents and natural-history imagery.
+- **Culture:** plum, muted rose and arts editorial imagery.
+- **Editorial:** slate, muted violet and subject-led imagery for general topics.
+
 SlidePilot chooses a theme automatically based on the source document.

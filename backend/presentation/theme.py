@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from presentation.tokens import Radius, Spacing, Typography
 
@@ -71,10 +71,51 @@ ACADEMIC_THEME = Theme(
     body_font="Aptos",
 )
 
+# Topic palettes inherit the typography and layout treatments of the base themes.
+CULINARY_THEME = replace(
+    ACADEMIC_THEME,
+    background="FFF3E4", surface="FFF9EE", surface_alt="F6E2D0",
+    primary="9C3B24", secondary="43532F", accent="AE631F",
+    title_color="462719", body_color="513A2C", muted_color="735443", border_color="DFC0A8",
+)
+
+TRAVEL_THEME = replace(
+    BUSINESS_THEME,
+    background="EAF5F3", surface="F7FCFA", surface_alt="D9ECE8",
+    primary="125D60", secondary="284A63", accent="A85B25",
+    title_color="153C44", body_color="294951", muted_color="4A6469", border_color="A9CECA",
+)
+
+NATURE_THEME = replace(
+    ACADEMIC_THEME,
+    background="EBF0E1", surface="F6F8EF", surface_alt="DEE8D5",
+    primary="34563A", secondary="5A5431", accent="8D651F",
+    title_color="243A27", body_color="394D3A", muted_color="526651", border_color="B6C9A8",
+)
+
+CULTURE_THEME = replace(
+    ACADEMIC_THEME,
+    background="F3EAF2", surface="FCF6F9", surface_alt="EBD9E7",
+    primary="76365D", secondary="4E3E6B", accent="9E5B27",
+    title_color="40253A", body_color="51384D", muted_color="71536A", border_color="D9BBCF",
+)
+
+EDITORIAL_THEME = replace(
+    BUSINESS_THEME,
+    background="EEF0F5", surface="FAFBFE", surface_alt="E0E5F0",
+    primary="4C4771", secondary="3C5968", accent="356879",
+    title_color="302E49", body_color="41455A", muted_color="585D72", border_color="C4CADE",
+)
+
 THEMES = {
     "technology": TECHNOLOGY_THEME,
     "business": BUSINESS_THEME,
     "academic": ACADEMIC_THEME,
+    "culinary": CULINARY_THEME,
+    "travel": TRAVEL_THEME,
+    "nature": NATURE_THEME,
+    "culture": CULTURE_THEME,
+    "editorial": EDITORIAL_THEME,
 }
 
 
