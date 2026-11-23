@@ -1,5 +1,6 @@
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN
+from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches
 
 from presentation.components.text import add_text_box, hex_to_rgb
@@ -13,7 +14,10 @@ def _rect(slide, x, y, w, h, color: str, transparency: int = 0):
     )
     shape.fill.solid()
     shape.fill.fore_color.rgb = hex_to_rgb(color)
-    shape.fill.transparency = max(0, min(transparency, 100))
+    if transparency:
+        alpha = OxmlElement("a:alpha")
+        alpha.set("val", str((100 - max(0, min(transparency, 100))) * 1000))
+        shape._element.spPr.solidFill.srgbClr.append(alpha)
     shape.line.fill.background()
     return shape
 
@@ -25,7 +29,10 @@ def _dot(slide, x, y, size, color: str, transparency: int = 0):
     )
     shape.fill.solid()
     shape.fill.fore_color.rgb = hex_to_rgb(color)
-    shape.fill.transparency = max(0, min(transparency, 100))
+    if transparency:
+        alpha = OxmlElement("a:alpha")
+        alpha.set("val", str((100 - max(0, min(transparency, 100))) * 1000))
+        shape._element.spPr.solidFill.srgbClr.append(alpha)
     shape.line.fill.background()
     return shape
 
@@ -194,23 +201,23 @@ def add_brand(slide, theme: Theme, section: str | None = None):
 def add_heading(slide, theme: Theme, title: str, subtitle: str | None = None):
     title_y = 1.02 if theme.name != "academic" else 1.05
     add_text_box(
-        slide, title, 0.78, title_y, 10.8, 0.78,
-        theme.title_font, theme.typography.title, theme.title_color, True,
+        slide, title, 0.78, title_y, 11.7, 0.78,
+        theme.title_font, 25 if len(title) > 55 else theme.typography.title, theme.title_color, True,
     )
 
     if theme.name == "business":
-        _rect(slide, 0.78, 1.89, 0.56, 0.035, theme.primary)
-        _rect(slide, 1.38, 1.89, 0.30, 0.035, theme.accent, 45)
+        _rect(slide, 0.78, 1.71, 0.56, 0.035, theme.primary)
+        _rect(slide, 1.38, 1.71, 0.30, 0.035, theme.accent, 45)
     elif theme.name == "technology":
-        _rect(slide, 0.78, 1.88, 0.58, 0.045, theme.accent, 5)
-        _rect(slide, 1.40, 1.88, 0.26, 0.045, theme.primary, 10)
+        _rect(slide, 0.78, 1.71, 0.58, 0.045, theme.accent, 5)
+        _rect(slide, 1.40, 1.71, 0.26, 0.045, theme.primary, 10)
     else:
-        _rect(slide, 0.78, 1.91, 2.30, 0.022, theme.border_color)
-        _rect(slide, 0.78, 1.91, 0.72, 0.028, theme.accent, 8)
+        _rect(slide, 0.78, 1.71, 2.30, 0.022, theme.border_color)
+        _rect(slide, 0.78, 1.71, 0.72, 0.028, theme.accent, 8)
 
     if subtitle:
         add_text_box(
-            slide, subtitle, 0.78, 2.05, 9.5, 0.5,
+            slide, subtitle, 0.78, 1.80, 11.7, 0.36,
             theme.body_font, 12, theme.muted_color,
         )
 
@@ -221,8 +228,5 @@ def add_footer(slide, theme: Theme, text: str | None = None):
     Layout/type labels are intentionally hidden from exported presentations.
     ``text`` remains accepted so existing layout calls do not need to change.
     """
-    if theme.name == "academic":
-        _rect(slide, 0.78, 6.93, 11.75, 0.018, theme.border_color)
-    elif theme.name == "technology":
-        _dot(slide, 12.20, 6.77, 0.06, theme.accent, 15)
-
+    _rect(slide, 0.78, 6.93, 11.77, 0.014, theme.border_color)
+    _rect(slide, 0.78, 6.93, 0.55, 0.026, theme.accent)

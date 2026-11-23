@@ -83,7 +83,7 @@ button { cursor: pointer; }
   background: linear-gradient(180deg, rgba(255,255,255,.76), rgba(246,242,252,.7)); transition: .25s ease; outline: none;
   cursor: pointer;
 }
-.dropzone:hover, .dropzone:focus { border-color: #9a7bf2; transform: translateY(-2px); background: rgba(255,255,255,.94); box-shadow: 0 18px 45px rgba(94,70,150,.08); }
+.dropzone:hover, .dropzone:focus-within { border-color: #9a7bf2; transform: translateY(-2px); background: rgba(255,255,255,.94); box-shadow: 0 18px 45px rgba(94,70,150,.08); }
 .dropzone.hasFile { border-style: solid; border-color: rgba(108,72,255,.24); }
 .uploadIcon { width: 53px; height: 53px; border-radius: 17px; display: grid; place-items: center; color: white; background: linear-gradient(135deg, #7d54ff, #5e3ff0); box-shadow: 0 13px 27px rgba(108,72,255,.22); }
 .uploadIcon .arrow { font-size: 25px; transform: translateY(-1px); }
@@ -91,46 +91,26 @@ button { cursor: pointer; }
 .dropzone strong { font-size: 15px; margin-top: 3px; max-width: 78%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .dropzone > span { font-size: 11px; color: #9595a9; }
 
-.optionsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 17px; }
-.optionBlock, .visualToggle, .visualAutoNote { min-height: 79px; padding: 14px 15px; border: 1px solid #ece7f4; border-radius: 17px; background: rgba(255,255,255,.65); }
-.optionBlock label, .visualToggle strong, .visualAutoNote strong { display: block; font-size: 11px; font-weight: 800; margin-bottom: 7px; }
-.optionBlock select { width: 100%; border: none; background: transparent; color: #6f7084; font-size: 11px; outline: none; }
-.visualToggle { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; cursor: pointer; }
-.visualToggle span:not(.switch) { display: block; font-size: 10px; line-height: 1.45; color: #9292a5; }
-.visualToggle input { position: absolute; opacity: 0; pointer-events: none; }
-.switch { flex: 0 0 auto; width: 43px; height: 24px; border-radius: 999px; background: #ddd9e9; position: relative; transition: .2s ease; }
-.switch::after { content: ""; position: absolute; width: 18px; height: 18px; top: 3px; left: 3px; border-radius: 50%; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.13); transition: .2s ease; }
-.visualToggle input:checked + .switch { background: linear-gradient(90deg, var(--purple), var(--blue)); }
-.visualToggle input:checked + .switch::after { transform: translateX(19px); }
-
-.generateButton, .downloadButton { border: none; color: white; background: linear-gradient(90deg, #714cff, #4569ff); font-weight: 800; box-shadow: 0 14px 35px rgba(85,73,235,.22); transition: .2s ease; }
-.generateButton { width: 100%; margin-top: 17px; min-height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-.generateButton:hover:not(:disabled), .downloadButton:hover { transform: translateY(-2px); box-shadow: 0 18px 43px rgba(85,73,235,.3); }
-.generateButton:disabled { opacity: .48; cursor: not-allowed; box-shadow: none; }
-.generateButton span, .downloadButton span { font-size: 16px; }
+.fileInput:disabled { cursor: wait; }
+.downloadButton { border: none; color: white; background: linear-gradient(90deg, #714cff, #4569ff); font-weight: 800; box-shadow: 0 14px 35px rgba(85,73,235,.22); transition: .2s ease; }
+.downloadButton:hover { transform: translateY(-2px); box-shadow: 0 18px 43px rgba(85,73,235,.3); }
+.downloadButton span { font-size: 16px; }
 
 .progressPanel, .readyPanel, .errorPanel { margin-top: 17px; border-radius: 18px; border: 1px solid #e9e3f4; background: rgba(255,255,255,.72); }
-.progressPanel { padding: 16px; }
-.progressTop { display: flex; justify-content: space-between; color: #66677d; font-size: 11px; font-weight: 800; }
-.progressTrack { height: 6px; background: #ebe7f3; border-radius: 999px; overflow: hidden; margin-top: 11px; }
-.progressTrack > div { height: 100%; background: linear-gradient(90deg, var(--purple), var(--blue)); transition: width .45s ease; }
-.phaseList { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 14px; }
-.phaseList span { color: #adaabd; font-size: 9px; display: flex; align-items: center; gap: 6px; }
-.phaseList span.active { color: #68657c; }
-.phaseList i { font-style: normal; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; border: 1px solid #ddd5ee; font-size: 8px; }
-.phaseList span.active i { color: white; background: var(--purple); border-color: var(--purple); }
+.progressPanel { display: flex; align-items: center; gap: 14px; padding: 16px; font-size: 13px; }
+.progressPanel p { margin: 4px 0 0; color: #66677d; font-size: 12px; }
+.spinner { width: 22px; height: 22px; flex: none; border: 2px solid #e9e3f4; border-top-color: var(--purple); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+.retryButton { margin-left: 12px; padding: 3px 8px; border: 1px solid currentColor; border-radius: 6px; color: inherit; background: transparent; cursor: pointer; }
 
 .readyPanel { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 16px; }
 .readyIcon { width: 43px; height: 43px; border-radius: 14px; display: grid; place-items: center; background: #eaf8f0; color: #27a866; font-weight: 900; }
-.readyPanel h3 { margin: 3px 0 2px; font-size: 13px; }
+.readyPanel h3 { overflow-wrap: anywhere; margin: 3px 0 2px; font-size: 13px; }
 .readyPanel p { margin: 0; font-size: 10px; color: #9293a6; }
 .downloadButton { border-radius: 12px; padding: 11px 14px; font-size: 10px; display: flex; gap: 8px; align-items: center; }
 .errorPanel { padding: 13px 15px; color: #a43d50; background: #fff5f7; border-color: #f3d7dd; font-size: 11px; }
 
-.featureRow { width: min(900px, 100%); margin: 23px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.featureRow > div { padding: 16px; border-top: 1px solid rgba(108,72,255,.16); }
-.featureRow strong { display: block; font-size: 11px; }
-.featureRow span { display: block; margin-top: 5px; color: #9292a6; font-size: 10px; line-height: 1.5; }
 footer { width: min(1180px, calc(100% - 40px)); min-height: 90px; margin: 28px auto 0; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(100,90,140,.12); color: #9796aa; font-size: 9px; }
 footer span:first-child { color: #6b58be; font-weight: 850; }
 
@@ -141,12 +121,8 @@ footer span:first-child { color: #6b58be; font-weight: 850; }
   .heroCopy { font-size: 13px; }
   .workspace { padding: 19px; border-radius: 22px; }
   .workspaceHeader { align-items: flex-start; flex-direction: column; }
-  .optionsGrid, .featureRow { grid-template-columns: 1fr; }
   .dropzone { min-height: 220px; }
   .readyPanel { grid-template-columns: auto 1fr; }
   .downloadButton { grid-column: 1 / -1; justify-content: center; }
   footer { flex-direction: column; justify-content: center; gap: 8px; }
 }
-
-.visualAutoNote span { display:block; font-size:10px; line-height:1.5; color:#9292a5; }
-.singleOption { grid-template-columns: .8fr 1.2fr; }

@@ -11,7 +11,7 @@ SlidePilot turns PDF, DOCX, and TXT documents into editable PowerPoint presentat
 - Three distinct design languages: Technology, Business, Academic
 - Optional AI-generated visuals for suitable story slides
 - Editable PPTX output with python-pptx
-- Drag-and-drop Next.js interface with theme override and AI-visual toggle
+- Drag-and-drop Next.js interface that generates PowerPoint after upload
 
 ## Project structure
 
@@ -70,7 +70,7 @@ Open `http://localhost:3000`.
 
 ## AI visuals
 
-AI visuals are optional in the UI because they add generation time and API cost. When enabled, SlidePilot generates images only for layouts where an editorial image adds value. Charts, tables, metrics, and timelines use their own information visualizations instead.
+SlidePilot generates images automatically for slides where an editorial image adds value. Charts, tables, metrics, and timelines use their own information visualizations instead.
 
 Environment controls:
 
@@ -87,4 +87,4 @@ MAX_GENERATED_VISUALS=6
 - **Business:** light corporate canvas, blue rail, restrained grids and KPI styling.
 - **Academic:** warm editorial canvas, burgundy/gold rules, serif hierarchy.
 
-The AI chooses a theme automatically, but users can override it from the frontend.
+SlidePilot chooses a theme automatically based on the source document.

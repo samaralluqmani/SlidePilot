@@ -109,17 +109,17 @@ def add_visual_panel(
                 orb.fill.transparency = 30 + index * 14
                 orb.line.fill.background()
         elif theme.name == "business":
-            for index, height in enumerate((0.8, 1.35, 2.0, 2.6)):
-                bar = slide.shapes.add_shape(
-                    MSO_SHAPE.RECTANGLE,
-                    Inches(x + 0.55 + index * 0.62),
-                    Inches(y + h - 0.7 - height),
-                    Inches(0.34), Inches(height),
+            for index, scale in enumerate((0.75, 0.52, 0.29)):
+                size = min(w, h) * scale
+                tile = slide.shapes.add_shape(
+                    MSO_SHAPE.ROUNDED_RECTANGLE,
+                    Inches(x + (w - size) / 2), Inches(y + (h - size) / 2),
+                    Inches(size), Inches(size),
                 )
-                bar.fill.solid()
-                bar.fill.fore_color.rgb = hex_to_rgb(theme.primary)
-                bar.fill.transparency = 10 + index * 7
-                bar.line.fill.background()
+                tile.rotation = 45
+                tile.fill.solid()
+                tile.fill.fore_color.rgb = hex_to_rgb((theme.border_color, theme.accent, theme.primary)[index])
+                tile.line.fill.background()
         else:
             book = slide.shapes.add_shape(
                 MSO_SHAPE.RECTANGLE,

@@ -1,39 +1,60 @@
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.util import Inches
+from pptx.enum.text import MSO_ANCHOR
 
 from models.deck import Slide
+from presentation.components.card import add_card
 from presentation.components.chrome import apply_background, add_brand, add_footer, add_heading
-from presentation.components.text import add_bullet_list, add_text_box, hex_to_rgb
+from presentation.components.text import add_bullet_list, add_text_box
 from presentation.components.visual import add_visual_panel
 from presentation.theme import Theme
 
 
 def render_content_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None = None):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    apply_background(slide, theme, variant="content")
-    add_brand(slide, theme, theme.name)
+    apply_background(slide, theme)
+    add_brand(slide, theme)
     add_heading(slide, theme, data.title, data.subtitle)
 
-    text_x, text_y, text_w, text_h = 0.82, 2.45, 7.0, 3.95
-    visual_x, visual_y, visual_w, visual_h = 8.42, 2.28, 3.92, 3.95
+    top = 2.55
+    accent = theme.accent if theme.name == "technology" else theme.primary
 
-    if theme.name == "technology":
-        panel = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.72), Inches(2.28), Inches(7.35), Inches(4.18))
-        panel.fill.solid(); panel.fill.fore_color.rgb = hex_to_rgb(theme.surface); panel.fill.transparency = 4
-        panel.line.color.rgb = hex_to_rgb(theme.border_color); panel.line.transparency = 35
-    elif theme.name == "business":
-        rule = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(7.98), Inches(2.35), Inches(0.018), Inches(3.85))
-        rule.fill.solid(); rule.fill.fore_color.rgb = hex_to_rgb(theme.border_color); rule.line.fill.background()
-    else:
-        rule = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.82), Inches(2.28), Inches(7.0), Inches(0.018))
-        rule.fill.solid(); rule.fill.fore_color.rgb = hex_to_rgb(theme.border_color); rule.line.fill.background()
-        text_y = 2.58
-
-    if data.bullets:
-        add_bullet_list(slide, data.bullets, text_x, text_y, text_w, text_h, theme.body_font, 16, theme.body_color, theme.accent, 14)
+    if image_bytes:
+        if data.bullets:
+            add_bullet_list(
+                slide, data.bullets, 0.78, top + 0.2, 6.9, 3.55,
+                theme.body_font, 18, theme.body_color, accent, 13,
+            )
+        elif data.body:
+            add_text_box(
+                slide, data.body, 0.78, top, 6.9, 3.6,
+                theme.body_font, 22, theme.body_color, valign=MSO_ANCHOR.MIDDLE,
+            )
+        add_visual_panel(slide, theme, image_bytes, 8.1, top, 4.45, 3.63, data.visual_caption)
+    elif data.bullets:
+        columns = min(len(data.bullets), 3)
+        rows = (len(data.bullets) + columns - 1) // columns
+        gap = 0.23
+        width = (11.77 - gap * (columns - 1)) / columns
+        height = 1.68 if rows == 2 else 2.7
+        for index, item in enumerate(data.bullets):
+            row, column = divmod(index, columns)
+            x = 0.78 + column * (width + gap)
+            y = top + row * (height + gap)
+            add_card(slide, theme, x=x, y=y, w=width, h=height, shadow=False, accent_top=True)
+            add_text_box(
+                slide, f"{index + 1:02d}", x + 0.2, y + 0.12, 0.65, 0.34,
+                theme.body_font, 12, accent, True,
+            )
+            add_text_box(
+                slide, item, x + 0.2, y + 0.48, width - 0.4, height - 0.55,
+                theme.body_font, 18 if rows == 2 else 22, theme.body_color,
+                valign=MSO_ANCHOR.MIDDLE,
+            )
     elif data.body:
-        add_text_box(slide, data.body, text_x, text_y, text_w, text_h, theme.body_font, 17 if theme.name != "academic" else 16, theme.body_color)
+        add_card(slide, theme, x=0.78, y=top, w=11.77, h=3.45, shadow=False, accent_top=True)
+        add_text_box(
+            slide, data.body, 1.22, top + 0.3, 10.89, 2.85,
+            theme.body_font, 26, theme.body_color, valign=MSO_ANCHOR.MIDDLE,
+        )
 
-    add_visual_panel(slide, theme, image_bytes, visual_x, visual_y, visual_w, visual_h, data.visual_caption)
     add_footer(slide, theme)
     return slide

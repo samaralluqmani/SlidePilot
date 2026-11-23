@@ -9,7 +9,7 @@ from models.deck import Deck
 
 load_dotenv()
 
-SKIP_LAYOUTS = {"metrics", "table", "chart", "timeline", "process"}
+SKIP_LAYOUTS = {"metrics", "table", "chart", "timeline", "process", "two_column"}
 
 
 THEME_VISUAL_DIRECTION = {
@@ -44,7 +44,7 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
     max_visuals = int(os.getenv("MAX_GENERATED_VISUALS", "6"))
     reasoning_model = os.getenv("OPENAI_VISUAL_REASONING_MODEL", "gpt-5.6-luna")
     image_model = os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-2")
-    client = _client()
+    client = None
 
     visuals: dict[int, bytes] = {}
     generated = 0
@@ -62,11 +62,13 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
             f"Create one premium presentation visual for a {deck.theme} presentation. "
             f"Slide title: {slide.title}. Content-specific direction: {slide.visual_prompt}. "
             f"Theme art direction: {theme_direction} "
-            "Compose for a portrait-ish side visual region inside a 16:9 presentation slide, with a clear focal subject "
+            "Compose for the right-hand image region of a presentation slide, with a centered focal subject "
             "and useful breathing room around it. No readable text, no letters, no logos, no watermark."
         )
 
         try:
+            if client is None:
+                client = _client()
             response = client.responses.create(
                 model=reasoning_model,
                 input=prompt,
@@ -74,7 +76,7 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
                     {
                         "type": "image_generation",
                         "model": image_model,
-                        "size": "1536x1024",
+                        "size": "1024x1536" if slide.layout in {"title", "closing"} else "1536x1024",
                         "quality": "medium",
                         "output_format": "png",
                     }

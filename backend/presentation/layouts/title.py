@@ -1,5 +1,5 @@
 from pptx.enum.shapes import MSO_SHAPE
-from pptx.enum.text import PP_ALIGN
+from pptx.enum.text import MSO_ANCHOR
 from pptx.util import Inches
 
 from models.deck import Slide
@@ -32,7 +32,9 @@ def render_title_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
         title_size = 35
         accent_color = theme.accent
 
-    add_text_box(slide, data.title, title_x, title_y, title_w, 1.55, theme.title_font, title_size, theme.title_color, True)
+    add_text_box(slide, data.title, title_x, title_y - 0.25, title_w, 1.75, theme.title_font,
+                 title_size - 6 if len(data.title) > 50 else title_size + 4,
+                 theme.title_color, True, valign=MSO_ANCHOR.MIDDLE)
 
     line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(title_x), Inches(3.73), Inches(1.15), Inches(0.055))
     line.fill.solid(); line.fill.fore_color.rgb = hex_to_rgb(accent_color); line.line.fill.background()
@@ -40,12 +42,8 @@ def render_title_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
     if data.subtitle:
         add_text_box(slide, data.subtitle, title_x, 4.03, 6.7, 0.85, theme.body_font, 17, theme.body_color)
 
-    if data.visual_caption and theme.name == "academic":
-        caption = data.visual_caption
-    else:
-        caption = None
+    caption = data.visual_caption if image_bytes and theme.name == "academic" else None
     add_visual_panel(slide, theme, image_bytes, visual_x, visual_y, visual_w, visual_h, caption)
-
 
     add_footer(slide, theme)
     return slide
