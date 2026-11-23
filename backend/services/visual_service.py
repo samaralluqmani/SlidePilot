@@ -9,7 +9,7 @@ from models.deck import Deck
 
 load_dotenv()
 
-SKIP_LAYOUTS = {"metrics", "table", "chart", "timeline", "process", "two_column"}
+SKIP_LAYOUTS = {"metrics", "metric_story", "takeaway", "table", "chart", "timeline", "process", "two_column"}
 
 
 THEME_VISUAL_DIRECTION = {
@@ -50,7 +50,12 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
     generated = 0
     theme_direction = THEME_VISUAL_DIRECTION.get(deck.theme, THEME_VISUAL_DIRECTION["technology"])
 
-    for index, slide in enumerate(deck.slides):
+    # Preserve the cover and evidence visuals when the document exceeds the image budget.
+    ordered_slides = sorted(
+        enumerate(deck.slides),
+        key=lambda entry: ({"title": 0, "evidence": 1}.get(entry[1].layout, 2), entry[0]),
+    )
+    for index, slide in ordered_slides:
         if generated >= max_visuals:
             break
         if slide.layout in SKIP_LAYOUTS:

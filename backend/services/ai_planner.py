@@ -17,7 +17,10 @@ Use the language of the source document. Build a clear story: context, evidence 
 Use takeaway headlines that make one clear point, ideally under 55 characters. Keep subtitles under 85 characters.
 Prefer three or fewer short bullets per slide. Use a short paragraph only when the point needs a narrative.
 Vary the layout when the source supports it. Never invent dates, quotations, metrics, or chart values.
+Use a title slide, then a takeaway slide for the main idea, followed by supporting slides and a closing synthesis.
+Give every slide a distinct job. Select a different composition when the job changes. Avoid repeating layouts except when the same comparison or sequence genuinely needs more space.
 The closing slide should use its body to state a source-supported takeaway or next step.
+Before returning the plan, check each slide against the document. Preserve units, time periods, conditions, and distinctions such as actual results versus targets. Do not infer causation or generalize beyond the source. Explain the meaning in clear language, and omit any claim that cannot be traced to the document.
 
 Themes:
 - technology: software, AI, engineering, data, cloud, cybersecurity, digital products
@@ -26,10 +29,13 @@ Themes:
 
 Supported layouts:
 - title
+- takeaway
 - content
 - bullets
 - two_column
 - metrics
+- metric_story
+- evidence
 - process
 - timeline
 - table
@@ -37,6 +43,9 @@ Supported layouts:
 - closing
 
 Layout rules:
+- takeaway: the central message in a short headline and one plain-language body paragraph explaining what it means. No illustrative image, list, or metric card.
+- metric_story: one important source-backed KPI and an explanation of why it matters. Provide exactly one metric and put its interpretation in body, including relevant context such as baseline, unit, or timeframe when available.
+- evidence: a finding supported by a meaningful editorial visual. Use a takeaway headline, a short body explaining the finding, a specific visual_prompt, and optionally a concise caption. Use a chart or table for quantitative evidence. A generated illustration must illustrate the concept and must never depict fabricated measurements, screenshots, or documentary evidence.
 - metrics: independent headline KPIs or summary statistics, never a clear time series. Every metric.value must be a compact numeric KPI such as 24%, $3.2M, 18x, or 1.4M; never put descriptive phrases in metric.value
 - chart: trends over time or useful numeric comparisons; line for time trends, bar for categories, pie only for meaningful part-to-whole data
 - table: exact values across multiple rows and columns. Keep cells concise and presentation-friendly; avoid paragraph-length table cells.
@@ -47,10 +56,10 @@ Layout rules:
 - content: a short narrative paragraph or overview
 
 Visual planning:
-- Use a visual_prompt for the cover and selected narrative slides when imagery adds meaning. Use visual_style "none" for text-led slides and all two_column slides.
+- Use a visual_prompt for the cover, evidence slides, and selected narrative slides when imagery adds meaning. Use visual_style "none" for text-led slides and all two_column slides.
 - visual_style may be abstract, illustration, photo, diagram, or none.
 - Prompts should describe one clean editorial visual with no readable text, no logos, and no watermark.
-- Do not request generated images for chart, table, metrics, timeline, or process slides; those layouts already provide their own information visual.
+- Do not request generated images for chart, table, metrics, metric_story, timeline, or process slides; those layouts already provide their own information visual.
 - Match visual prompts to the selected theme: technology = polished futuristic editorial; business = premium corporate editorial; academic = restrained scholarly editorial.
 
 The deck object must contain title, optional subtitle/author, theme, and slides.

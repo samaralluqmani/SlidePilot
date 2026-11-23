@@ -2,6 +2,8 @@ import io
 
 import fitz
 from docx import Document
+from docx.table import Table
+from docx.text.paragraph import Paragraph
 
 
 SUPPORTED_EXTENSIONS = {"pdf", "docx", "txt"}
@@ -23,10 +25,10 @@ def extract_text(filename: str, file_bytes: bytes) -> str:
 def extract_pdf(file_bytes: bytes) -> str:
     text_parts: list[str] = []
     with fitz.open(stream=file_bytes, filetype="pdf") as document:
-        for page in document:
-            page_text = page.get_text("text").strip()
+        for number, page in enumerate(document, start=1):
+            page_text = page.get_text("text", sort=True).strip()
             if page_text:
-                text_parts.append(page_text)
+                text_parts.append(f"[PDF page {number}]\n{page_text}")
     return "\n\n".join(text_parts)
 
 
@@ -34,17 +36,20 @@ def extract_docx(file_bytes: bytes) -> str:
     document = Document(io.BytesIO(file_bytes))
     text_parts: list[str] = []
 
-    for paragraph in document.paragraphs:
-        value = paragraph.text.strip()
-        if value:
-            text_parts.append(value)
-
-    # Preserve useful table content because comparison tables often become slides.
-    for table in document.tables:
-        for row in table.rows:
-            cells = [cell.text.strip() for cell in row.cells]
-            if any(cells):
-                text_parts.append(" | ".join(cells))
+    for block in document.iter_inner_content():
+        if isinstance(block, Paragraph):
+            value = block.text.strip()
+            if value:
+                heading = block.style and block.style.name.startswith("Heading")
+                text_parts.append(f"[Heading] {value}" if heading else value)
+        elif isinstance(block, Table):
+            rows = []
+            for row in block.rows:
+                cells = [cell.text.strip() for cell in row.cells]
+                if any(cells):
+                    rows.append(" | ".join(cells))
+            if rows:
+                text_parts.append("[Table]\n" + "\n".join(rows))
 
     return "\n\n".join(text_parts)
 

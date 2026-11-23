@@ -6,10 +6,13 @@ from pydantic import BaseModel, Field
 ThemeName = Literal["business", "technology", "academic"]
 SlideLayout = Literal[
     "title",
+    "takeaway",
     "content",
     "bullets",
     "two_column",
     "metrics",
+    "metric_story",
+    "evidence",
     "process",
     "timeline",
     "table",

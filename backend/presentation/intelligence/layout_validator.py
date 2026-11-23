@@ -3,7 +3,7 @@ from models.deck import Deck, Slide
 
 VALID_LAYOUTS = {
     "title", "content", "bullets", "two_column", "metrics",
-    "process", "timeline", "table", "chart", "closing",
+    "process", "timeline", "table", "chart", "closing", "takeaway", "metric_story", "evidence",
 }
 
 
@@ -16,6 +16,12 @@ def validate_deck_layouts(deck: Deck) -> Deck:
 def validate_slide_layout(slide: Slide) -> str:
     layout = slide.layout
     if layout not in VALID_LAYOUTS:
+        return choose_fallback_layout(slide)
+    if layout == "metric_story":
+        if len(slide.metrics) == 1 and (slide.body or slide.subtitle):
+            return layout
+        return "metrics" if slide.metrics else choose_fallback_layout(slide)
+    if layout == "evidence" and not (slide.body or slide.subtitle):
         return choose_fallback_layout(slide)
     if layout == "metrics" and not slide.metrics:
         return choose_fallback_layout(slide)
