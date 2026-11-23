@@ -9,7 +9,7 @@ from models.deck import Deck
 
 load_dotenv()
 
-SKIP_LAYOUTS = {"metrics", "metric_story", "takeaway", "table", "chart", "timeline", "process", "two_column"}
+SKIP_LAYOUTS = {"metrics", "metric_story", "takeaway", "table", "chart", "timeline", "process", "two_column", "closing"}
 
 
 THEME_VISUAL_DIRECTION = {
@@ -81,7 +81,7 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
                     {
                         "type": "image_generation",
                         "model": image_model,
-                        "size": "1024x1536" if slide.layout in {"title", "closing"} else "1536x1024",
+                        "size": "1024x1536" if slide.layout == "title" else "1536x1024",
                         "quality": "medium",
                         "output_format": "png",
                     }

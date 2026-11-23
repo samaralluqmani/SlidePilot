@@ -74,7 +74,7 @@ def render_chart_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
     if chart.has_legend:
         chart.legend.position = XL_LEGEND_POSITION.RIGHT
         chart.legend.font.name = theme.body_font
-        chart.legend.font.size = Pt(10)
+        chart.legend.font.size = Pt(12)
         chart.legend.font.color.rgb = hex_to_rgb(theme.body_color)
 
     series = chart.series[0]
@@ -91,12 +91,12 @@ def render_chart_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
         value_axis = chart.value_axis
         value_axis.has_major_gridlines = True
         value_axis.tick_labels.font.name = theme.body_font
-        value_axis.tick_labels.font.size = Pt(9)
+        value_axis.tick_labels.font.size = Pt(12)
         value_axis.tick_labels.font.color.rgb = hex_to_rgb(theme.muted_color)
 
         category_axis = chart.category_axis
         category_axis.tick_labels.font.name = theme.body_font
-        category_axis.tick_labels.font.size = Pt(9)
+        category_axis.tick_labels.font.size = Pt(11 if len(data.chart.labels) > 5 else 12)
         category_axis.tick_labels.font.color.rgb = hex_to_rgb(theme.body_color)
 
     add_footer(slide, theme, f"{data.chart.chart_type.upper()} VISUALIZATION")

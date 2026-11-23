@@ -1,32 +1,54 @@
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Inches
 
 from models.deck import Slide
-from presentation.components.chrome import apply_background, add_brand, add_footer
+from presentation.components.chrome import add_brand, add_footer, apply_background
 from presentation.components.text import add_text_box, hex_to_rgb
-from presentation.components.visual import add_visual_panel
 from presentation.theme import Theme
+
+
+def _add_panel(slide, theme: Theme):
+    shape = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE if theme.name == "academic" else MSO_SHAPE.ROUNDED_RECTANGLE,
+        Inches(0.95), Inches(1.27), Inches(11.43), Inches(5.28),
+    )
+    shape.shadow.inherit = False
+    shape.fill.solid()
+    shape.fill.fore_color.rgb = hex_to_rgb(theme.surface)
+    shape.line.color.rgb = hex_to_rgb(theme.border_color)
+    if theme.name != "academic":
+        shape.adjustments[0] = 0.07
 
 
 def render_closing_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None = None):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     apply_background(slide, theme, variant="closing")
-    add_brand(slide, theme, f"{theme.name} / END")
+    add_brand(slide, theme)
+    _add_panel(slide, theme)
 
-    title_y = 1.92 if theme.name != "academic" else 1.85
-    add_text_box(slide, data.title, 0.88, title_y, 7.0 if image_bytes else 11.4, 1.35, theme.title_font, 31 if len(data.title) > 50 else 38, theme.title_color, True)
+    summary = data.body or data.subtitle or next(iter(data.bullets), None)
+    add_text_box(
+        slide, data.title, 1.60, 1.83 if summary else 2.44, 10.13, 1.78,
+        theme.title_font, 38 if len(data.title) > 55 else 47, theme.title_color, True,
+        align=PP_ALIGN.CENTER, valign=MSO_ANCHOR.MIDDLE,
+    )
 
-    line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.88), Inches(3.28), Inches(1.0), Inches(0.05))
-    line.fill.solid(); line.fill.fore_color.rgb = hex_to_rgb(theme.accent if theme.name != "business" else theme.primary); line.line.fill.background()
+    rule_y = 3.76 if summary else 4.44
+    rule = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(6.12), Inches(rule_y), Inches(1.09), Inches(0.045),
+    )
+    rule.shadow.inherit = False
+    rule.fill.solid()
+    rule.fill.fore_color.rgb = hex_to_rgb(theme.primary if theme.name == "business" else theme.accent)
+    rule.line.fill.background()
 
-    summary = data.body or data.subtitle
     if summary:
         add_text_box(
-            slide, summary, 0.88, 3.63, 6.85 if image_bytes else 10.0, 1.85,
-            theme.body_font, 18 if image_bytes else 23, theme.body_color,
+            slide, summary, 2.26, 4.01, 8.81, 1.95,
+            theme.body_font, 20 if len(summary) > 190 else 24, theme.body_color,
+            align=PP_ALIGN.CENTER, valign=MSO_ANCHOR.MIDDLE,
         )
 
-    if image_bytes:
-        add_visual_panel(slide, theme, image_bytes, 8.55, 1.65, 3.75, 4.65, data.visual_caption)
     add_footer(slide, theme)
     return slide
