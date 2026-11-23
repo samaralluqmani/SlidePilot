@@ -67,9 +67,17 @@ class Slide(BaseModel):
     visual_caption: str | None = None
 
 
+class ArtDirection(BaseModel):
+    primary: str
+    accent: str
+    canvas: Literal["light", "dark"]
+    imagery: str
+
+
 class Deck(BaseModel):
     title: str
     subtitle: str | None = None
     author: str | None = None
     theme: ThemeName
     slides: list[Slide]
+    art_direction: ArtDirection | None = None

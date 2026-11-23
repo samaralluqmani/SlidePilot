@@ -75,6 +75,7 @@ def _score(text: str, terms: dict[str, int]) -> int:
 def resolve_theme(deck: Deck, source_text: str, override: str | None = None) -> Deck:
     if override in THEMES:
         deck.theme = override
+        deck.art_direction = None
         return deck
 
     scores = {name: _score(source_text, terms) for name, terms in WEIGHTS.items()}

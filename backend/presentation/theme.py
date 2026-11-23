@@ -1,4 +1,7 @@
 from dataclasses import dataclass, replace
+import re
+
+from models.deck import ArtDirection
 
 from presentation.tokens import Radius, Spacing, Typography
 
@@ -121,3 +124,71 @@ THEMES = {
 
 def get_theme(name: str) -> Theme:
     return THEMES.get(name, TECHNOLOGY_THEME)
+
+
+def _channels(color: str) -> tuple[int, int, int]:
+    return tuple(int(color[index:index + 2], 16) for index in (0, 2, 4))
+
+
+def _mix(color: str, target: str, amount: float) -> str:
+    return "".join(
+        f"{round(start + (end - start) * amount):02X}"
+        for start, end in zip(_channels(color), _channels(target))
+    )
+
+
+def _luminance(color: str) -> float:
+    values = [channel / 255 for channel in _channels(color)]
+    linear = [value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4 for value in values]
+    return sum(value * weight for value, weight in zip(linear, (0.2126, 0.7152, 0.0722)))
+
+
+def contrast_ratio(first: str, second: str) -> float:
+    low, high = sorted((_luminance(first), _luminance(second)))
+    return (high + 0.05) / (low + 0.05)
+
+
+def contrasting_text(background: str) -> str:
+    return max(("FFFFFF", "000000"), key=lambda color: contrast_ratio(color, background))
+
+
+def _readable(color: str, target: str, surfaces: tuple[str, ...]) -> str:
+    for step in range(21):
+        candidate = _mix(color, target, step / 20)
+        if all(contrast_ratio(candidate, surface) >= 4.5 for surface in surfaces):
+            return candidate
+    return target
+
+
+def get_deck_theme(name: str, direction: ArtDirection | None) -> Theme:
+    fallback = get_theme(name)
+    if direction is None:
+        return fallback
+
+    primary, accent = (value.strip().removeprefix("#").upper() for value in (direction.primary, direction.accent))
+    if not all(re.fullmatch(r"[0-9A-F]{6}", color) for color in (primary, accent)):
+        return fallback
+
+    dark = direction.canvas == "dark"
+    neutral = "10131E" if dark else "FAF9F6"
+    foreground = "FFFFFF" if dark else "000000"
+    background = _mix(neutral, primary, 0.08)
+    surface = _mix(neutral, primary, 0.14 if dark else 0.03)
+    surface_alt = _mix(neutral, accent, 0.20 if dark else 0.10)
+    surfaces = (background, surface, surface_alt)
+
+    # Keep light/dark layout treatments consistent with the generated canvas.
+    base = TECHNOLOGY_THEME if dark else (ACADEMIC_THEME if fallback.name == "academic" else BUSINESS_THEME)
+    return replace(
+        base,
+        background=background,
+        surface=surface,
+        surface_alt=surface_alt,
+        primary=_readable(primary, foreground, surfaces),
+        secondary=_readable(_mix(primary, accent, 0.5), foreground, surfaces),
+        accent=_readable(accent, foreground, surfaces),
+        title_color=_readable(_mix(foreground, primary, 0.12), foreground, surfaces),
+        body_color=_readable(_mix(foreground, primary, 0.24), foreground, surfaces),
+        muted_color=_readable(_mix(foreground, background, 0.42), foreground, surfaces),
+        border_color=_mix(surface, foreground, 0.23),
+    )

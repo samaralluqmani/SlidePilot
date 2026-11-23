@@ -15,7 +15,7 @@ from presentation.layouts.takeaway import render_takeaway_slide
 from presentation.layouts.timeline import render_timeline_slide
 from presentation.layouts.title import render_title_slide
 from presentation.layouts.two_column import render_two_column_slide
-from presentation.theme import Theme, get_theme
+from presentation.theme import Theme, get_deck_theme
 
 
 RENDERERS = {
@@ -40,7 +40,7 @@ def build_presentation(deck: Deck, visuals: dict[int, bytes] | None = None) -> B
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
 
-    theme = get_theme(deck.theme)
+    theme = get_deck_theme(deck.theme, deck.art_direction)
     visuals = visuals or {}
 
     for index, slide_data in enumerate(deck.slides):

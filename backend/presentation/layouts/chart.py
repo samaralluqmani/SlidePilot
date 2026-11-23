@@ -87,7 +87,13 @@ def render_chart_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
         series.format.fill.fore_color.rgb = hex_to_rgb(series_color)
         series.format.line.color.rgb = hex_to_rgb(series_color)
 
-    if data.chart.chart_type != "pie":
+    if data.chart.chart_type == "pie":
+        colors = (theme.primary, theme.accent, theme.secondary, theme.muted_color)
+        for index, point in enumerate(series.points):
+            point.format.fill.solid()
+            point.format.fill.fore_color.rgb = hex_to_rgb(colors[index % len(colors)])
+            point.format.line.color.rgb = hex_to_rgb(theme.surface)
+    else:
         value_axis = chart.value_axis
         value_axis.has_major_gridlines = True
         value_axis.tick_labels.font.name = theme.body_font

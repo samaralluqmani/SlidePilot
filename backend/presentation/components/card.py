@@ -67,7 +67,7 @@ def add_card(
             Inches(x + 0.025), Inches(y + 0.035), Inches(w), Inches(h),
         )
         s.fill.solid()
-        s.fill.fore_color.rgb = hex_to_rgb("EFF3F8")
+        s.fill.fore_color.rgb = hex_to_rgb(theme.surface_alt)
         s.line.fill.background()
 
     elif theme.name == "technology" and shadow:

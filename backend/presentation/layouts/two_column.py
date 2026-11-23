@@ -5,7 +5,7 @@ from models.deck import Slide
 from presentation.components.card import add_card
 from presentation.components.chrome import apply_background, add_brand, add_footer, add_heading
 from presentation.components.text import add_bullet_list, add_text_box, hex_to_rgb
-from presentation.theme import Theme
+from presentation.theme import Theme, contrasting_text
 
 
 def render_two_column_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None = None):
@@ -18,7 +18,8 @@ def render_two_column_slide(prs, data: Slide, theme: Theme, image_bytes: bytes |
 
     if theme.name in {"business", "technology"}:
         card_y, card_h, band_h = 2.52, 3.36, 0.48
-        for idx, x in enumerate((left_x, right_x)):
+        band_colors = (theme.primary, theme.secondary if theme.name == "technology" else theme.accent)
+        for x, band_color in zip((left_x, right_x), band_colors):
             add_card(
                 slide, theme, x=x, y=card_y, w=col_w, h=card_h,
                 shadow=theme.name == "business",
@@ -28,11 +29,9 @@ def render_two_column_slide(prs, data: Slide, theme: Theme, image_bytes: bytes |
                 Inches(x), Inches(card_y), Inches(col_w), Inches(band_h),
             )
             band.fill.solid()
-            band.fill.fore_color.rgb = hex_to_rgb(
-                theme.primary if idx == 0 else (theme.secondary if theme.name == "technology" else theme.accent)
-            )
+            band.fill.fore_color.rgb = hex_to_rgb(band_color)
             band.line.fill.background()
-        heading_color = "FFFFFF"
+        left_heading_color, right_heading_color = map(contrasting_text, band_colors)
         title_y = card_y + 0.13
         items_y = card_y + 0.72
         items_h = 2.30
@@ -44,13 +43,13 @@ def render_two_column_slide(prs, data: Slide, theme: Theme, image_bytes: bytes |
         divider.fill.solid()
         divider.fill.fore_color.rgb = hex_to_rgb(theme.border_color)
         divider.line.fill.background()
-        heading_color = theme.primary
+        left_heading_color = right_heading_color = theme.primary
         title_y = 2.62
         items_y = 3.20
         items_h = 2.45
 
-    add_text_box(slide, data.left_title or "Overview", left_x + 0.22, title_y, 4.95, 0.32, theme.body_font, 14, heading_color, True)
-    add_text_box(slide, data.right_title or "Details", right_x + 0.22, title_y, 4.95, 0.32, theme.body_font, 14, heading_color, True)
+    add_text_box(slide, data.left_title or "Overview", left_x + 0.22, title_y, 4.95, 0.32, theme.body_font, 14, left_heading_color, True)
+    add_text_box(slide, data.right_title or "Details", right_x + 0.22, title_y, 4.95, 0.32, theme.body_font, 14, right_heading_color, True)
 
     add_bullet_list(
         slide, data.left_items, left_x + 0.28, items_y, 4.85, items_h,

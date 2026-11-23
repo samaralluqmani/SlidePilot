@@ -2,12 +2,12 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.util import Inches
 
 from presentation.components.text import hex_to_rgb
-from presentation.theme import Theme
+from presentation.theme import Theme, contrasting_text
 
 
 def _icon_color(theme: Theme) -> str:
     if theme.name == "business":
-        return "FFFFFF"
+        return contrasting_text(theme.primary)
     if theme.name == "technology":
         return theme.accent
     return theme.primary

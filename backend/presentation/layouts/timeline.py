@@ -6,7 +6,7 @@ from models.deck import Slide
 from presentation.components.card import add_card
 from presentation.components.chrome import apply_background, add_brand, add_footer, add_heading
 from presentation.components.text import add_text_box, hex_to_rgb
-from presentation.theme import Theme
+from presentation.theme import Theme, contrasting_text
 
 
 def _timeline_font(text: str, count: int) -> float:
@@ -54,7 +54,7 @@ def render_timeline_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | N
             node.line.fill.background()
             add_text_box(
                 slide, f"{index + 1:02d}", cx - 0.18, node_y + 0.09, 0.36, 0.18,
-                theme.body_font, 7, "FFFFFF", True, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE,
+                theme.body_font, 7, contrasting_text(theme.primary), True, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE,
             )
             add_text_box(
                 slide, event.label, cx - 0.80, 2.70, 1.60, 0.42,

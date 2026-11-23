@@ -6,7 +6,7 @@ from pptx.util import Inches, Pt
 from models.deck import Slide
 from presentation.components.chrome import apply_background, add_brand, add_footer, add_heading
 from presentation.components.text import hex_to_rgb
-from presentation.theme import Theme
+from presentation.theme import Theme, contrasting_text
 
 
 def _column_weights(headers: list[str], rows: list[list[str]]) -> list[float]:
@@ -64,15 +64,8 @@ def render_table_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
     for i, width in enumerate(col_widths):
         table.columns[i].width = Inches(width)
 
-    if theme.name == "technology":
-        header_fill = theme.primary
-        header_text = "FFFFFF"
-    elif theme.name == "academic":
-        header_fill = theme.primary
-        header_text = "FFFDF8"
-    else:
-        header_fill = theme.primary
-        header_text = "FFFFFF"
+    header_fill = theme.primary
+    header_text = contrasting_text(header_fill)
 
     body_size = _font_size(headers, rows)
 
@@ -117,12 +110,7 @@ def render_table_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
             cell.text = value
             cell.fill.solid()
 
-            if theme.name == "technology":
-                fill_color = theme.surface if row_index % 2 else theme.surface_alt
-            elif theme.name == "business":
-                fill_color = "FFFFFF" if row_index % 2 else "F4F7FB"
-            else:
-                fill_color = theme.surface if row_index % 2 else theme.surface_alt
+            fill_color = theme.surface if row_index % 2 else theme.surface_alt
             cell.fill.fore_color.rgb = hex_to_rgb(fill_color)
 
             cell.margin_left = Inches(0.10)

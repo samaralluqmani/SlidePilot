@@ -22,7 +22,8 @@ Give every slide a distinct job. Select a different composition when the job cha
 Give the closing slide a short conclusion title and one plain-language sentence in body stating the source-supported goal, implication, or next step. Keep it distinct from the main-message slide. Avoid listing earlier steps again or describing goals as achieved outcomes.
 Before returning the plan, check each slide against the document. Preserve units, time periods, conditions, and distinctions such as actual results versus targets. Do not infer causation or generalize beyond the source. Explain the meaning in clear language, and omit any claim that cannot be traced to the document.
 
-Choose the visual theme from the main subject of the document. Use editorial for general topics that do not fit a theme below.
+Generate one custom art_direction for each document. Its primary and accent are two distinct six-digit hex colors sampled conceptually from the subject, with no predefined color assignment by topic. Choose light or dark canvas for the audience and mood. Give imagery a short art direction grounded in the document, such as subject-specific materials, photography or illustration style, and lighting. Two documents in the same broad category can have different color and imagery directions.
+Choose theme only as a fallback if the art direction cannot be applied. Use editorial for general topics that do not fit a theme below.
 Themes:
 - technology: software, AI, engineering, data, cloud, cybersecurity, digital products
 - business: strategy, markets, customers, operations, finance, sales, management
@@ -68,7 +69,7 @@ Visual planning:
 - Do not request generated images for chart, table, metrics, metric_story, timeline, or process slides; those layouts already provide their own information visual.
 - Match each visual to the actual topic and specific details in the source. For example, use the named dish or ingredients in a recipe, and the named destination in a travel document. Use a conceptual visual if a factual depiction would require guessing.
 
-The deck object must contain title, optional subtitle/author, theme, and slides.
+The deck object must contain title, optional subtitle/author, theme, art_direction, and slides.
 """
 
 

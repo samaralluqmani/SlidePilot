@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from models.deck import Deck
+from presentation.theme import get_deck_theme, get_theme
 
 
 load_dotenv()
@@ -62,6 +63,14 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
     theme_direction = THEME_VISUAL_DIRECTION.get(deck.theme, THEME_VISUAL_DIRECTION["editorial"])
 
     # Preserve the cover and evidence visuals when the document exceeds the image budget.
+    palette = get_deck_theme(deck.theme, deck.art_direction)
+    if deck.art_direction and palette is not get_theme(deck.theme):
+        imagery = " ".join(deck.art_direction.imagery.split())[:400]
+        theme_direction = (
+            f"{imagery} Coordinate with the slides: canvas #{palette.background}, "
+            f"primary #{palette.primary}, accent #{palette.accent}."
+        )
+
     ordered_slides = sorted(
         enumerate(deck.slides),
         key=lambda entry: ({"title": 0, "evidence": 1}.get(entry[1].layout, 2), entry[0]),
@@ -75,7 +84,7 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
             continue
 
         prompt = (
-            f"Create one premium presentation visual for a {deck.theme} presentation. "
+            f"Create one editorial presentation visual for {deck.title}. "
             f"Slide title: {slide.title}. Content-specific direction: {slide.visual_prompt}. "
             f"Theme art direction: {theme_direction} "
             "Compose for the right-hand image region of a presentation slide, with a centered focal subject "

@@ -93,4 +93,4 @@ MAX_GENERATED_VISUALS=6
 - **Culture:** plum, muted rose and arts editorial imagery.
 - **Editorial:** slate, muted violet and subject-led imagery for general topics.
 
-SlidePilot chooses a theme automatically based on the source document.
+SlidePilot derives a deck-wide color palette and image direction from each source document. It adjusts text contrast during rendering and uses one of the built-in themes above when a custom palette is unavailable. Explicit API theme overrides still use the selected built-in theme.
