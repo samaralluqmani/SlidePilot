@@ -41,6 +41,7 @@ class ChartData(BaseModel):
     chart_type: Literal["bar", "line", "pie"]
     labels: list[str] = Field(default_factory=list)
     values: list[float] = Field(default_factory=list)
+    value_label: str | None = None
 
 
 class Slide(BaseModel):

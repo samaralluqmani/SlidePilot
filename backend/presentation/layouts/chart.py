@@ -55,7 +55,7 @@ def render_chart_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
 
     chart_data = ChartData()
     chart_data.categories = data.chart.labels
-    chart_data.add_series("Value", data.chart.values)
+    chart_data.add_series(data.chart.value_label or "", data.chart.values)
 
     chart_type_map = {
         "bar": XL_CHART_TYPE.COLUMN_CLUSTERED,
@@ -96,6 +96,14 @@ def render_chart_slide(prs, data: Slide, theme: Theme, image_bytes: bytes | None
     else:
         value_axis = chart.value_axis
         value_axis.has_major_gridlines = True
+        if data.chart.value_label:
+            value_axis.has_title = True
+            frame = value_axis.axis_title.text_frame
+            frame.text = data.chart.value_label
+            font = frame.paragraphs[0].font
+            font.name = theme.body_font
+            font.size = Pt(13)
+            font.color.rgb = hex_to_rgb(theme.body_color)
         value_axis.tick_labels.font.name = theme.body_font
         value_axis.tick_labels.font.size = Pt(12)
         value_axis.tick_labels.font.color.rgb = hex_to_rgb(theme.muted_color)

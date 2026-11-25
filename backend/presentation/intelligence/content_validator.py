@@ -1,3 +1,6 @@
+import re
+import unicodedata
+
 from models.deck import Deck, Slide
 
 
@@ -52,7 +55,35 @@ def validate_deck_content(deck: Deck) -> Deck:
 
     for slide in deck.slides:
         normalize_slide(slide)
+    _merge_repeated_closing(deck)
     return deck
+
+
+def _comparison_key(text: str) -> str:
+    text = unicodedata.normalize("NFKC", text).casefold()
+    return " ".join(re.findall(r"[^\W_]+", text))
+
+
+def _merge_repeated_closing(deck: Deck) -> None:
+    if len(deck.slides) <= 3:
+        return
+    previous, closing = deck.slides[-2:]
+    if previous.layout not in {"content", "bullets", "takeaway"} or closing.layout != "closing":
+        return
+    if previous.source_visual_id or previous.visual_prompt:
+        return
+
+    closing_text = closing.body or closing.subtitle or next(iter(closing.bullets), "")
+    closing_key = _comparison_key(closing_text)
+    details = [
+        key for value in (previous.subtitle, previous.body, *previous.bullets)
+        if value and (key := _comparison_key(value))
+    ]
+    repeated = {
+        separator.join(details) for separator in (" ", " and ", " و ", " و")
+    } if details else set()
+    if closing_key in repeated:
+        del deck.slides[-2]
 
 
 def normalize_slide(slide: Slide) -> None:
@@ -90,6 +121,8 @@ def normalize_slide(slide: Slide) -> None:
         count = min(len(slide.chart.labels), len(slide.chart.values), MAX_CHART_POINTS)
         slide.chart.labels = [shorten_text(x, 24) for x in slide.chart.labels[:count]]
         slide.chart.values = slide.chart.values[:count]
+        if slide.chart.value_label:
+            slide.chart.value_label = shorten_text(slide.chart.value_label, 60) or None
 
     if slide.visual_prompt:
         slide.visual_prompt = shorten_text(slide.visual_prompt, 380)
