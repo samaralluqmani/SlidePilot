@@ -172,9 +172,10 @@ def get_deck_theme(name: str, direction: ArtDirection | None) -> Theme:
     dark = direction.canvas == "dark"
     neutral = "10131E" if dark else "FAF9F6"
     foreground = "FFFFFF" if dark else "000000"
-    background = _mix(neutral, primary, 0.08)
-    surface = _mix(neutral, primary, 0.14 if dark else 0.03)
-    surface_alt = _mix(neutral, accent, 0.20 if dark else 0.10)
+    # Carry the topic hue across large surfaces so it remains visible at a glance.
+    background = _mix(neutral, primary, 0.25)
+    surface = _mix(neutral, primary, 0.18 if dark else 0.08)
+    surface_alt = _mix(neutral, accent, 0.28 if dark else 0.18)
     surfaces = (background, surface, surface_alt)
 
     # Keep light/dark layout treatments consistent with the generated canvas.
@@ -190,5 +191,5 @@ def get_deck_theme(name: str, direction: ArtDirection | None) -> Theme:
         title_color=_readable(_mix(foreground, primary, 0.12), foreground, surfaces),
         body_color=_readable(_mix(foreground, primary, 0.24), foreground, surfaces),
         muted_color=_readable(_mix(foreground, background, 0.42), foreground, surfaces),
-        border_color=_mix(surface, foreground, 0.23),
+        border_color=_mix(surface, _readable(primary, foreground, surfaces), 0.40),
     )
