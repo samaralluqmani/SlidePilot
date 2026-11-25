@@ -2,6 +2,7 @@ import os
 import re
 from pathlib import Path
 from urllib.parse import quote
+from unicodedata import bidirectional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -15,6 +16,7 @@ from presentation.intelligence.layout_validator import validate_deck_layouts
 from presentation.intelligence.theme_resolver import resolve_theme
 from services.ai_planner import create_deck
 from services.document_parser import SUPPORTED_EXTENSIONS, extract_text
+from services.document_visuals import DocumentVisual, extract_document_visuals
 from services.visual_service import generate_deck_visuals
 
 
@@ -79,12 +81,39 @@ def _safe_filename(filename: str) -> str:
     return f"{safe}_presentation.pptx"
 
 
-def _prepare_deck(text: str, theme_override: str | None):
-    deck = create_deck(text)
+def _prepare_deck(text: str, theme_override: str | None, figures: list[DocumentVisual]):
+    catalog = [
+        {"id": figure.id, "page": figure.page, "caption": figure.caption,
+         "width": figure.width, "height": figure.height}
+        for figure in figures
+    ]
+    deck = create_deck(text, catalog)
     deck = resolve_theme(deck, text, theme_override)
     deck = validate_deck_layouts(deck)
     deck = validate_deck_content(deck)
-    return deck
+
+    by_id = {figure.id: figure for figure in figures}
+    originals = {}
+    used = set()
+    for index, slide in enumerate(deck.slides):
+        figure = by_id.get(slide.source_visual_id)
+        slide.source_visual_id = None
+        slide.source_visual_label = None
+        if slide.layout != "evidence" or figure is None or figure.id in used:
+            continue
+
+        used.add(figure.id)
+        originals[index] = figure.image_bytes
+        slide.source_visual_id = figure.id
+        direction = next(
+            (bidirectional(character) for character in slide.title if bidirectional(character) in {"L", "R", "AL"}), "L"
+        )
+        if direction in {"R", "AL"}:
+            slide.source_visual_label = f"المصدر: المستند الأصلي، صفحة {figure.page}" if figure.page else "المصدر: المستند الأصلي"
+        else:
+            slide.source_visual_label = f"Source: supplied document, p. {figure.page}" if figure.page else "Source: supplied document"
+        slide.visual_caption = figure.caption
+    return deck, originals
 
 
 @app.get("/")
@@ -131,7 +160,8 @@ async def plan_presentation(
             raise HTTPException(status_code=422, detail="No readable text was found in the document.")
 
         override = None if theme_override == "auto" else theme_override
-        deck = await run_in_threadpool(_prepare_deck, text, override)
+        figures = await run_in_threadpool(extract_document_visuals, file.filename or "", file_bytes)
+        deck, _ = await run_in_threadpool(_prepare_deck, text, override, figures)
         return {"success": True, "filename": file.filename, "deck": deck.model_dump()}
     except HTTPException:
         raise
@@ -152,8 +182,10 @@ async def generate_presentation(
             raise HTTPException(status_code=422, detail="No readable text was found in the document.")
 
         override = None if theme_override == "auto" else theme_override
-        deck = await run_in_threadpool(_prepare_deck, text, override)
+        figures = await run_in_threadpool(extract_document_visuals, file.filename or "", file_bytes)
+        deck, originals = await run_in_threadpool(_prepare_deck, text, override, figures)
         visuals = await run_in_threadpool(generate_deck_visuals, deck)
+        visuals.update(originals)
         pptx_file = await run_in_threadpool(build_presentation, deck, visuals)
 
         output_filename = _safe_filename(file.filename or "slidepilot")

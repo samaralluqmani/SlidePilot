@@ -65,6 +65,8 @@ class Slide(BaseModel):
     visual_style: VisualStyle = "none"
     visual_prompt: str | None = None
     visual_caption: str | None = None
+    source_visual_id: str | None = None
+    source_visual_label: str | None = None
 
 
 class ArtDirection(BaseModel):

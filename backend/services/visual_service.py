@@ -78,7 +78,7 @@ def generate_deck_visuals(deck: Deck) -> dict[int, bytes]:
     for index, slide in ordered_slides:
         if generated >= max_visuals:
             break
-        if slide.layout in SKIP_LAYOUTS:
+        if slide.layout in SKIP_LAYOUTS or slide.source_visual_label:
             continue
         if slide.visual_style == "none" or not slide.visual_prompt:
             continue

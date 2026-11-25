@@ -23,8 +23,11 @@ def validate_slide_layout(slide: Slide) -> str:
         return "metrics" if slide.metrics else choose_fallback_layout(slide)
     if layout == "evidence" and not (slide.body or slide.subtitle):
         return choose_fallback_layout(slide)
-    if layout == "metrics" and not slide.metrics:
-        return choose_fallback_layout(slide)
+    if layout == "metrics":
+        if not slide.metrics:
+            return choose_fallback_layout(slide)
+        if len(slide.metrics) == 1 and slide.body:
+            return "metric_story"
     if layout == "timeline" and not slide.timeline:
         return choose_fallback_layout(slide)
     if layout == "process" and len(slide.process) < 2:

@@ -70,7 +70,7 @@ Open `http://localhost:3000`.
 
 ## AI visuals
 
-SlidePilot generates images automatically for slides where an editorial image adds value. Charts, tables, metrics, and timelines use their own information visualizations instead.
+SlidePilot can reuse relevant raster figures from uploaded PDFs and Word documents. Evidence slides preserve the image proportions and show its source, including the page number for PDFs. SlidePilot generates images automatically for other slides where an editorial image adds value. Charts, tables, metrics, and timelines use their own information visualizations instead.
 
 Environment controls:
 
